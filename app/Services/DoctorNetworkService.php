@@ -30,7 +30,7 @@ class DoctorNetworkService
             $visited[] = $currentDoctorId;
             
             // Add current doctor to results
-            $doctor = Doctor::find($currentDoctorId);
+            $doctor = Doctor::with('specializations')->find($currentDoctorId);
             if ($doctor) {
                 $connectedDoctors->push($doctor);
             }
@@ -103,5 +103,24 @@ class DoctorNetworkService
         return $connectedDoctors->filter(function ($doctor) use ($specializedDoctorIds) {
             return in_array($doctor->id, $specializedDoctorIds);
         });
+    }
+
+    /**
+     * Get specialization aggregates for a collection of doctors
+     * @param Collection $doctors
+     * @return array
+     */
+    public function getSpecializationAggregates(Collection $doctors): array
+    {
+        $aggregates = [];
+        
+        foreach ($doctors as $doctor) {
+            foreach ($doctor->specializations as $specialization) {
+                $specializationName = $specialization->specialization;
+                $aggregates[$specializationName] = ($aggregates[$specializationName] ?? 0) + 1;
+            }
+        }
+        
+        return $aggregates;
     }
 }

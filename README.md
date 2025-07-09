@@ -33,8 +33,10 @@ The `DoctorNetworkService` implements:
 
 ## API Endpoints
 
-### Network Analysis
+### Network Analysis (Detailed)
 `GET /api/doctor/network-analysis/{doctorId}?specialization={specialization}`
+
+Returns detailed information about connected doctors.
 
 **Parameters:**
 - `doctorId`: ID of the doctor to analyze
@@ -45,14 +47,29 @@ The `DoctorNetworkService` implements:
 curl -H "Accept: application/json" -X GET "http://127.0.0.1:8000/api/doctor/network-analysis/56?specialization=Surgery"
 ```
 
+### Network Aggregates (Challenge Format)
+`GET /api/doctor/network-aggregates/{doctorId}?specialization={specialization}`
+
+Returns aggregated specialization counts for connected doctors.
+
+**Parameters:**
+- `doctorId`: ID of the doctor to analyze
+- `specialization`: Required query parameter (e.g., "Surgery")
+
+**Example:**
+```bash
+curl -H "Accept: application/json" -X GET "http://127.0.0.1:8000/api/doctor/network-aggregates/56?specialization=Surgery"
+```
+
 **Response:**
 ```json
 {
-  "doctor_id": 56,
-  "doctor_name": "Roger Green",
-  "specialization": "Surgery",
-  "connected_doctors_count": 69,
-  "connected_doctors": [...]
+  "specializations_aggregrates": {
+    "Cardiology": 23,
+    "Surgery": 69,
+    "Allergy and immunology": 21,
+    "Anesthesiology": 18
+  }
 }
 ```
 
