@@ -31,6 +31,31 @@ The `DoctorNetworkService` implements:
 - Finding all doctors connected to a specific doctor
 - Filtering connected doctors by specialization
 
+## API Endpoints
+
+### Network Analysis
+`GET /api/doctor/network-analysis/{doctorId}?specialization={specialization}`
+
+**Parameters:**
+- `doctorId`: ID of the doctor to analyze
+- `specialization`: Required query parameter (e.g., "Surgery")
+
+**Example:**
+```bash
+curl -H "Accept: application/json" -X GET "http://127.0.0.1:8000/api/doctor/network-analysis/56?specialization=Surgery"
+```
+
+**Response:**
+```json
+{
+  "doctor_id": 56,
+  "doctor_name": "Roger Green",
+  "specialization": "Surgery",
+  "connected_doctors_count": 69,
+  "connected_doctors": [...]
+}
+```
+
 ### Example Usage
 
 ```php
