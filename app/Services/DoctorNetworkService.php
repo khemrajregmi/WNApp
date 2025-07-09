@@ -19,7 +19,7 @@ class DoctorNetworkService
         $visited = [];
         $queue = [$doctorId];
         $connectedDoctors = collect();
-        // dd($connectedDoctors);
+        
         while (!empty($queue)) {
             $currentDoctorId = array_shift($queue);
             
@@ -44,7 +44,7 @@ class DoctorNetworkService
                 }
             }
         }
-        // dd('final connection', $connectedDoctors);
+        
         return $connectedDoctors;
     }
 
@@ -64,7 +64,7 @@ class DoctorNetworkService
             FROM doctors_network 
             WHERE doctor_1_id = ? OR doctor_2_id = ?
         ", [$doctorId, $doctorId, $doctorId]);
-        // dd($connections);
+        
         return array_column($connections, 'connected_doctor_id');
     }
 
