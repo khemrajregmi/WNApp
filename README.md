@@ -48,15 +48,19 @@ curl -H "Accept: application/json" -X GET "http://127.0.0.1:8000/api/doctor/netw
 ```
 
 ### Network Aggregates (Challenge Format)
-`GET /api/doctor/network-aggregates/{doctorId}?specialization={specialization}`
+`GET /api/doctor/network-aggregates/{doctorId}?specialization={specialization}&min_yoe={min}&max_yoe={max}`
 
-Returns aggregated specialization counts for connected doctors.
+Returns aggregated specialization counts for connected doctors with optional experience filtering.
 
 **Parameters:**
 - `doctorId`: ID of the doctor to analyze
 - `specialization`: Required query parameter (e.g., "Surgery")
+- `min_yoe`: Optional minimum years of experience
+- `max_yoe`: Optional maximum years of experience
 
-**Example:**
+**Examples:**
+
+1. **Basic aggregation:**
 ```bash
 curl -H "Accept: application/json" -X GET "http://127.0.0.1:8000/api/doctor/network-aggregates/56?specialization=Surgery"
 ```
@@ -64,11 +68,38 @@ curl -H "Accept: application/json" -X GET "http://127.0.0.1:8000/api/doctor/netw
 **Response:**
 ```json
 {
-  "specializations_aggregrates": {
+  "specializations_aggregates": {
     "Cardiology": 23,
     "Surgery": 69,
     "Allergy and immunology": 21,
     "Anesthesiology": 18
+  }
+}
+```
+
+2. **With experience filtering:**
+```bash
+curl -H "Accept: application/json" -X GET "http://127.0.0.1:8000/api/doctor/network-aggregates/56?specialization=Surgery&min_yoe=3&max_yoe=10"
+```
+
+**Response:**
+```json
+{
+  "specializations_aggregates": {
+    "Surgery": 32,
+    "Anesthesiology": 7,
+    "Allergy and immunology": 10,
+    "Cardiology": 8
+  },
+  "years_of_experience_aggregates": {
+    "5": 8,
+    "8": 3,
+    "7": 4,
+    "3": 7,
+    "6": 1,
+    "10": 4,
+    "4": 3,
+    "9": 2
   }
 }
 ```

@@ -60,6 +60,13 @@ class DoctorNetworkController extends Controller
      */
     public function getNetworkAggregates(Request $request, int $doctorId): JsonResponse
     {
+        // Validate the request
+        $validated = $request->validate([
+            'specialization' => 'required|string',
+            'min_yoe' => 'nullable|integer|min:0',
+            'max_yoe' => 'nullable|integer|min:0|gte:min_yoe',
+        ]);
+
         // Check if doctor exists
         $doctor = Doctor::find($doctorId);
         if (!$doctor) {
@@ -68,25 +75,32 @@ class DoctorNetworkController extends Controller
             ], 404);
         }
 
-        $specialization = $request->get('specialization');
-        
-        if (!$specialization) {
-            return response()->json([
-                'error' => 'Specialization parameter is required'
-            ], 400);
-        }
-
         // Find connected doctors with the specified specialization
         $connectedDoctors = $this->doctorNetworkService->findConnectedDoctorsBySpecialization(
             $doctorId,
-            $specialization
+            $validated['specialization']
         );
-        // dd($connectedDoctors);
-        // Get specialization aggregates for the connected doctors
-        $specializationAggregates = $this->doctorNetworkService->getSpecializationAggregates($connectedDoctors);
-        // dd($specializationAggregates);
-        return response()->json([
+
+        // Filter by years of experience if provided
+        $filteredDoctors = $this->doctorNetworkService->filterByYearsOfExperience(
+            $connectedDoctors,
+            $validated['min_yoe'] ?? null,
+            $validated['max_yoe'] ?? null
+        );
+
+        // Get specialization aggregates
+        $specializationAggregates = $this->doctorNetworkService->getSpecializationAggregates($filteredDoctors);
+
+        $response = [
             'specializations_aggregates' => $specializationAggregates
-        ]);
+        ];
+
+        // Add years of experience aggregates if filtering was applied
+        if (isset($validated['min_yoe']) || isset($validated['max_yoe'])) {
+            $yoeAggregates = $this->doctorNetworkService->getYearsOfExperienceAggregates($filteredDoctors);
+            $response['years_of_experience_aggregates'] = $yoeAggregates;
+        }
+
+        return response()->json($response);
     }
 }

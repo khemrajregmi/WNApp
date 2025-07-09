@@ -123,4 +123,49 @@ class DoctorNetworkService
         
         return $aggregates;
     }
+
+    /**
+     * Filter doctors by years of experience range
+     * @param Collection $doctors
+     * @param int|null $minYoe
+     * @param int|null $maxYoe
+     * @return Collection
+     */
+    public function filterByYearsOfExperience(Collection $doctors, ?int $minYoe = null, ?int $maxYoe = null): Collection
+    {
+        if ($minYoe === null && $maxYoe === null) {
+            return $doctors;
+        }
+
+        return $doctors->filter(function ($doctor) use ($minYoe, $maxYoe) {
+            $yoe = $doctor->years_of_experience;
+            
+            if ($minYoe !== null && $yoe < $minYoe) {
+                return false;
+            }
+            
+            if ($maxYoe !== null && $yoe > $maxYoe) {
+                return false;
+            }
+            
+            return true;
+        });
+    }
+
+    /**
+     * Get years of experience aggregates for a collection of doctors
+     * @param Collection $doctors
+     * @return array
+     */
+    public function getYearsOfExperienceAggregates(Collection $doctors): array
+    {
+        $aggregates = [];
+        
+        foreach ($doctors as $doctor) {
+            $yoe = (string) $doctor->years_of_experience;
+            $aggregates[$yoe] = ($aggregates[$yoe] ?? 0) + 1;
+        }
+        
+        return $aggregates;
+    }
 }
