@@ -1,4 +1,4 @@
-# WaarneemApp
+# WNApp
 
 Doctor Network Analysis System
 
